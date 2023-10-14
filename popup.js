@@ -1,4 +1,4 @@
-async function getTabs() {
+async function getChromeDeveloperTabs() {
     const tabs = await chrome.tabs.query({ 
     url: [
             "https://developer.chrome.com/docs/webstore/*",
@@ -8,15 +8,20 @@ async function getTabs() {
     return tabs;
 }
 
+async function getAllTabs() {
+    const tabs = await chrome.tabs.query({});
+    return tabs;
+}
+
 function createTabItem() {
     const li = document.createElement("li");
-    const a = document.createElement("a");
-    const h3 = document.createElement("h3");
-    const p = document.createElement("p");
     li.innerHTML = `
         <a>
-            <h3 class="title"></h3>
-            <p class="pathname"></p>
+            <div class="title-container">
+                <img class="favicon"></img>
+                <h3 class="title"></h3>
+            </div>
+            <p class="url-text"></p>
         </a>
     `;
     return li;
@@ -24,7 +29,7 @@ function createTabItem() {
 
 function openLinks() {
     const linkInput = document.getElementById("link-input");
-    const openLinksButton = document.getElementById("open-links");
+    const openLinksButton = document.getElementById("open-links-button");
 
     openLinksButton.addEventListener("click", () => {
         const links = linkInput.value.split("\n");
@@ -38,20 +43,34 @@ function openLinks() {
 
 openLinks();
 
-const tabs = await getTabs();
+console.log("clicked")
+
+const chromeDeveloperTabs = await getChromeDeveloperTabs();
+const tabs = await getAllTabs();
+console.log(tabs);
+const currentWindow = await chrome.windows.getCurrent();
+
 const collator = new Intl.Collator();
 
 tabs.sort((a,b) => collator.compare(a.title, b.title));
 
 const elements = new Set();
 for (const tab of tabs) {
+    console.log(tab.discarded)
+    if(!("url" in tab)) {
+        continue;
+    }
+    // console.log(!("url" in tab));
+
     const element = createTabItem();
 
-    const title = tab.title.split("-")[0].trim();
-    const pathname = new URL(tab.url).pathname.slice("/docs".length);
-
+    const favicon = tab.favIconUrl;
+    const title = tab.title;
+    const url = new URL(tab.url);
+    
+    element.querySelector(".favicon").src = favicon;
     element.querySelector(".title").textContent = title;
-    element.querySelector(".pathname").textContent = pathname;
+    element.querySelector(".url-text").textContent = url;
     element.querySelector("a").addEventListener("click", async () => {
         //need to focus window as well as the active tab
         await chrome.tabs.update(tab.id, { active: true });
@@ -62,10 +81,53 @@ for (const tab of tabs) {
 }
 document.querySelector("ul").append(...elements);
 
-const button = document.querySelector("button");
-button.addEventListener("click", async () => {
-    const tabIds = tabs.map(({id}) => id);
+const groupTabsButton = document.getElementById("group-tabs-button");
+const goToEZOpenButton = document.getElementById("go-to-ezopen-button");
+const backToTopButton = document.getElementById("back-to-top-button");
+const clearLinksButton = document.getElementById("clear-links-button");
+const body = document.querySelector("body")
+const linkInput = document.getElementById("link-input");
+
+groupTabsButton.addEventListener("click", () => {
+    groupTabsInCurrentWindow();
+    copyAllLinks();
+});
+
+goToEZOpenButton.addEventListener("click", () => {
+    body.scrollIntoView(false);
+    linkInput.focus();
+})
+
+backToTopButton.addEventListener("click", () => {
+    body.scrollIntoView(true);
+})
+
+clearLinksButton.addEventListener("click", () => {
+    linkInput.value = "";
+    linkInput.focus();
+})
+
+function copyAllLinks() {
+    const links = tabs.map((tab) => tab.url).join("\n");
+    copy(links)
+}
+
+function copy(text) {
+    return text;
+    //figure out how to get this into clipboard later
+    //use this: https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
+}
+
+async function groupTabsInCurrentWindow() {
+    const tabIds = [];
+    tabs.forEach((tab) => {
+        if(tab.windowId === currentWindow.id) {
+            tabIds.push(tab.id);
+        }
+    })
+
+    console.log(tabIds)
     const group = await chrome.tabs.group({ tabIds });
     await chrome.tabGroups.update(group, { title: "DOCS"});
-});
+}
 

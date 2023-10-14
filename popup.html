@@ -2,17 +2,28 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Popufeap</title>
+        <title>URL Manager</title>
         <link rel="stylesheet" href="popup.css">
     </head>
     <body>
 
-        <h1>Google Dev Docs</h1>
-        <button>Group Tabs</button>
+
+        <h1>URL Manager</h1>
+
+        <hr>
+
+        <button id="group-tabs-button">Group Tabs</button>
+        <button id="go-to-ezopen-button">EZ Open</button>
+
         <ul></ul>
 
+        <hr>
+
+        <h2>EZ open:</h2>
         <textarea id="link-input" placeholder="Paste your links here"></textarea>
-        <button id="open-links">Open Links</button>
+        <button id="open-links-button">Open Links</button>
+        <button id="clear-links-button">Clear Links</button>
+        <button id="back-to-top-button">Back to Top</button>
 
         <script src="popup.js" type="module"></script>
     </body>
