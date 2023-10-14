@@ -43,8 +43,6 @@ function openLinks() {
 
 openLinks();
 
-console.log("clicked")
-
 const chromeDeveloperTabs = await getChromeDeveloperTabs();
 const tabs = await getAllTabs();
 console.log(tabs);
@@ -56,12 +54,9 @@ tabs.sort((a,b) => collator.compare(a.title, b.title));
 
 const elements = new Set();
 for (const tab of tabs) {
-    console.log(tab.discarded)
     if(!("url" in tab)) {
         continue;
     }
-    // console.log(!("url" in tab));
-
     const element = createTabItem();
 
     const favicon = tab.favIconUrl;

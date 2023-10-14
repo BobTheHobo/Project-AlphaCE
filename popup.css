@@ -30,10 +30,10 @@ li {
         word-break: break-all;
     }
     &:nth-child(odd) {
-        background: #eee;
+        background: #dddddd;
     }
     &:nth-child(even) {
-        background: #fff;
+        background: #eee;
     }
 
     &::before {
