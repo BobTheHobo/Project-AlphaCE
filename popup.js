@@ -77,6 +77,7 @@ for (const tab of tabs) {
 document.querySelector("ul").append(...elements);
 
 const groupTabsButton = document.getElementById("group-tabs-button");
+const copyTabsButton = document.getElementById("copy-tabs-button");
 const goToEZOpenButton = document.getElementById("go-to-ezopen-button");
 const backToTopButton = document.getElementById("back-to-top-button");
 const clearLinksButton = document.getElementById("clear-links-button");
@@ -85,6 +86,9 @@ const linkInput = document.getElementById("link-input");
 
 groupTabsButton.addEventListener("click", () => {
     groupTabsInCurrentWindow();
+});
+
+copyTabsButton.addEventListener("click", () => {
     copyAllLinks();
 });
 
@@ -102,15 +106,40 @@ clearLinksButton.addEventListener("click", () => {
     linkInput.focus();
 })
 
+// Copies all urls of currently open tabs split with a newline
 function copyAllLinks() {
-    const links = tabs.map((tab) => tab.url).join("\n");
-    copy(links)
+    const links = [];
+    tabs.filter((tab) => {
+        if(filterURL(tab.url)){
+            links.push(tab.url);
+        }
+    })
+    copy(links.join("\n"));
+    console.log("links: "+links);
 }
 
+// Copies text to clipboard
 function copy(text) {
-    return text;
-    //figure out how to get this into clipboard later
-    //use this: https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
+    var text = text;
+    if (!navigator.clipboard) {
+        execCommand(copy, false, null);
+    } else {
+        navigator.clipboard.writeText(text).then(()=>{
+            console.log("Copied "+text);
+        }).catch(()=>{
+            console.log("Error");
+        });
+    }
+}
+
+// Returns false if a chrome:// link is detected
+function filterURL(link) {
+    if(link.includes("chrome://")){
+        console.log("chrome link detected: "+link);
+        return false;
+    } else {
+        return true;
+    }
 }
 
 async function groupTabsInCurrentWindow() {
