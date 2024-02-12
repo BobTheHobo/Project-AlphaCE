@@ -1,6 +1,9 @@
 # Project AlphaCE
 
-Project AlphaCE is a Chrome extension toolkit to improve my URL management and tab navigation. (Name subject to change) 
+Project AlphaCE is a Chrome extension toolkit to improve my URL management and tab navigation. (Name subject to change)
+
+![image](https://github.com/BobTheHobo/Project-AlphaCE/assets/32609305/da7bfebc-c340-42b1-8f9c-e9a054d1d184)
+
 
 ## Features
 
