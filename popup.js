@@ -81,8 +81,10 @@ const copyTabsButton = document.getElementById("copy-tabs-button");
 const goToEZOpenButton = document.getElementById("go-to-ezopen-button");
 const backToTopButton = document.getElementById("back-to-top-button");
 const clearLinksButton = document.getElementById("clear-links-button");
-const body = document.querySelector("body")
+const searchButton = document.getElementById("search-button");
+const body = document.querySelector("body");
 const linkInput = document.getElementById("link-input");
+const searchInput = document.getElementById("tab-search");
 
 groupTabsButton.addEventListener("click", () => {
     groupTabsInCurrentWindow();
@@ -104,6 +106,11 @@ backToTopButton.addEventListener("click", () => {
 clearLinksButton.addEventListener("click", () => {
     linkInput.value = "";
     linkInput.focus();
+})
+
+searchButton.addEventListener("click", () => {
+    const searchTerm = searchInput.value;
+    searchForTab(searchTerm); 
 })
 
 // Copies all urls of currently open tabs split with a newline
@@ -155,3 +162,12 @@ async function groupTabsInCurrentWindow() {
     await chrome.tabGroups.update(group, { title: "DOCS"});
 }
 
+function searchForTab(term) {
+    const searchResults = [];
+    tabs.filter((tab) => {
+        if(tab.url.includes(term) || tab.title.includes(term)){
+            console.log("Found: "+tab.url)
+            searchResults.push(tab.url);
+        }
+    })
+}
